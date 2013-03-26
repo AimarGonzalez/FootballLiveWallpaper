@@ -23,5 +23,5 @@
     android:thumbnail="@drawable/ic_launcher"
 	android:description="@string/wallpaperDesc"
 	android:author="@string/author"
-	android:settingsActivity="com.mel.wallpaper.football.settings.GameSettingsActivity"
+	android:settingsActivity="com.ag.wallpaper.football.settings.GameSettingsActivity"
 />
