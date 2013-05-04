@@ -6,12 +6,11 @@ import java.util.List;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.shape.RectangularShape;
-import org.andengine.entity.shape.Shape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.color.Color;
+import org.andengine.util.debug.Debug;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.ag.entityframework.Game;
 import com.ag.entityframework.Process;
@@ -133,6 +132,7 @@ public class TouchProcess extends Process implements IOnSceneTouchListener
 	
 	/* TOUCH LISTENERS */
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		Debug.d("touch", "("+pSceneTouchEvent.getX()+", "+pSceneTouchEvent.getY()+")");
 		pSceneTouchEvent.set(pSceneTouchEvent.getX(), pSceneTouchEvent.getY()+10);
 		if(this.partido.status == Partido.Status.PLAYING){
 			this.lastTouch = pSceneTouchEvent;
