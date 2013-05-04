@@ -154,6 +154,10 @@ public class FootballGame implements SharedPreferences.OnSharedPreferenceChangeL
 		updateBackgroundPosition();
 	}
 	
+	public void onScreenOrientationChanged(int screenOrientation){
+		updateBackgroundPosition();
+	}
+	
 	public void onGameCreated(){
 		
 		// start engine
@@ -181,7 +185,7 @@ public class FootballGame implements SharedPreferences.OnSharedPreferenceChangeL
 	
 	private Sprite getBackground(){
 		ITextureRegion texture = SpriteFactory.getMe().getTexture("background");
-		float visibleScreenHeight = FootballLiveWallpaper.CAMERA_HEIGHT - FootballLiveWallpaper.NOTIFICATION_BAR_HEIGHT;
+		float visibleScreenHeight = FootballLiveWallpaper.SCREEN_HEIGHT - FootballLiveWallpaper.NOTIFICATION_BAR_HEIGHT;
 		float visibleScreenWidth = visibleScreenHeight*texture.getWidth()/texture.getHeight();
 		
 		this.backgroundScaleFactor = visibleScreenHeight/texture.getHeight();

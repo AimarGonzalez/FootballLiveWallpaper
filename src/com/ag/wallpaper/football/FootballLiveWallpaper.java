@@ -31,9 +31,11 @@ import org.andengine.util.debug.Debug.DebugLevel;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseSineOut;
 
+import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
+import com.ag.util.Point;
 import com.ag.wallpaper.football.entity.Partido;
 import com.ag.wallpaper.football.settings.GameSettings;
 import com.ag.wallpaper.football.timer.TimerHelper;
@@ -42,8 +44,13 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 {
 	//android.os.Debug.waitForDebugger(); 
 
-	public static final int CAMERA_WIDTH = 480;
-	public static final int CAMERA_HEIGHT = 800;
+	public static final int SCREEN_WIDTH = 480;
+	public static final int SCREEN_HEIGHT = 800;
+	public static final int TEXTURE_WIDTH = 1150;
+	public static final int TEXTURE_HEIGHT = 840;
+	public static final int BACKGROUND_HEIGHT = SCREEN_HEIGHT - FootballLiveWallpaper.NOTIFICATION_BAR_HEIGHT;
+	public static final int BACKGROUND_WIDTH = BACKGROUND_HEIGHT*TEXTURE_WIDTH/TEXTURE_HEIGHT;
+	
 	public static final int NOTIFICATION_BAR_HEIGHT = 0;
 	
 	public static String PREFERENCES_ID = "mel.football.preferences";
@@ -102,9 +109,12 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 		//Toast.makeText(this, "You move my sprite right round, right round...", Toast.LENGTH_LONG).show();
 		Debug.d("toast", "onCreateEngineOptions");
 
-		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		Point cameraDimensions = calcCameraDimensionsByOrientation(getResources().getConfiguration().orientation);
+		
+		final Camera camera = new Camera(0, 0, cameraDimensions.getX(), cameraDimensions.getY());
 
-		EngineOptions options = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
+
+		EngineOptions options = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(SCREEN_WIDTH, SCREEN_HEIGHT), camera);
 		//EngineOptions options = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), camera);
 		options.getAudioOptions().setNeedsSound(true);
 		options.getAudioOptions().setNeedsMusic(true);
@@ -113,6 +123,66 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 		//DisplayMetrics metrics = getWindowManager().getDefaultDisplay().getMetrics(new DisplayMetrics());
 		
 		return options;
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		
+		Point cameraDimensions = calcCameraDimensionsByOrientation(newConfig.orientation);
+		
+		
+		//by changing camera surface (doesn't work)
+		//this.getEngine().getCamera().setSurfaceSize(0, 0, cameraDimensions.getX(), cameraDimensions.getY());
+		
+		//by setting max and mins
+		this.getEngine().getCamera().set(0,0, cameraDimensions.getX(), cameraDimensions.getY());
+		
+		if(this.game != null){
+			this.game.onScreenOrientationChanged(newConfig.orientation);
+		}
+		 
+	};
+	
+	protected Point calcCameraDimensionsByOrientation(int orientation){
+		int newWidth = 0;
+		int newHeight = 0;
+		
+		switch(orientation) {
+			case Configuration.ORIENTATION_LANDSCAPE:
+				//zoom out
+				//newWidth = (int)((float)(SCREEN_HEIGHT*SCREEN_HEIGHT)/(float)SCREEN_WIDTH);
+				//newHeight = SCREEN_HEIGHT;
+				
+				//fill screen (fit width)
+				newWidth = BACKGROUND_WIDTH;
+				newHeight = BACKGROUND_WIDTH*SCREEN_WIDTH/SCREEN_HEIGHT;
+				
+				//fill screen (fit height)
+				//newWidth = BACKGROUND_HEIGHT*SCREEN_HEIGHT/SCREEN_WIDTH;
+				//newHeight = BACKGROUND_HEIGHT;
+				
+				
+				//keep size
+				//newWidth = SCREEN_HEIGHT;
+				//newHeight = SCREEN_WIDTH;
+				
+				Debug.d("toast", "orientation: LANDSCAPE ("+newWidth+","+newHeight+")");
+				break;
+				
+			case Configuration.ORIENTATION_PORTRAIT:
+				newWidth = SCREEN_WIDTH;
+				newHeight = SCREEN_HEIGHT;
+				Debug.d("toast", "orientation: PORTRAIT ("+newWidth+","+newHeight+")");
+				break;
+				
+			default:
+				newWidth = SCREEN_WIDTH;
+				newHeight = SCREEN_HEIGHT;
+				Debug.d("toast", "orientation: PORTRAIT ("+newWidth+","+newHeight+")");
+		}
+		
+		return new Point(newWidth, newHeight);
 	}
 	
 
@@ -238,6 +308,9 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 			return;
 		}
 		
+		if(getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT){
+			return;
+		}
 		
 		if(isPlayingSplash())
 		{
@@ -306,8 +379,8 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 	
 	private void createSplashResources()
 	{
-		final int w = CAMERA_WIDTH;
-		final int h = CAMERA_HEIGHT;
+		final int w = SCREEN_WIDTH;
+		final int h = SCREEN_HEIGHT;
 
 		final Splash splash1_3 = new Splash("splash1.3.jpg",
 											320,239,
@@ -560,8 +633,8 @@ public class FootballLiveWallpaper extends BaseGameWallpaperService implements I
 				Debug.d("football", "loadSprite, first time");
 				
 				Debug.d("football", "loadSprite old w:" + w + "x h:" + h);
-//					while( w!=CAMERA_WIDTH && h!=CAMERA_HEIGHT ) // poor man's scale
-				while( h<CAMERA_HEIGHT ) // poor man's scale
+//					while( w!=SCREEN_WIDTH && h!=SCREEN_HEIGHT ) // poor man's scale
+				while( h<SCREEN_HEIGHT ) // poor man's scale
 				{
 					w++; h++;
 				}
