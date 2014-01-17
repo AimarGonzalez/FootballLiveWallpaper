@@ -102,7 +102,7 @@ public class FootballGame implements SharedPreferences.OnSharedPreferenceChangeL
 		SpriteFactory.getMe().registerTiledTexture(SpriteFactory.DEFAULT_PLAYER_TEXTURE,"fb_player.png", 512, 512, 8, 8);
 		
 		
-		SpriteFactory.getMe().registerTexture("background","field-final2.png", 2048, 1024);
+		SpriteFactory.getMe().registerTexture("background","field-final3.png", 2048, 1024);
 		SpriteFactory.getMe().registerTexture(SpriteFactory.GOAL_RIGHT,"porteria_derecha.png", 64, 128);
 		SpriteFactory.getMe().registerTexture(SpriteFactory.GOAL_LEFT,"porteria_izquierda.png", 64, 128);
 		SpriteFactory.getMe().registerTiledTexture(SpriteFactory.BALL,"fb_ball.png", 128, 128, 4, 4);
